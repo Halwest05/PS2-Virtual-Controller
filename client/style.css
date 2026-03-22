@@ -1,0 +1,276 @@
+:root {
+    --btn-fill: rgba(255, 255, 255, 0.15);
+    --btn-stroke: rgba(255, 255, 255, 0.4);
+    --btn-fill-active: rgba(255, 255, 255, 0.4);
+    --btn-stroke-active: rgba(255, 255, 255, 0.8);
+    --text-color: rgba(255, 255, 255, 0.7);
+}
+
+* {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #000;
+    color: var(--text-color);
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+#start-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #111;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#start-btn {
+    background: #000;
+    color: #fff;
+    border: 0.5vh solid #555;
+    padding: 3vh 8vw;
+    font-size: 3vh;
+    font-weight: bold;
+    border-radius: 2vh;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+#status-container {
+    position: absolute;
+    top: 2vh;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2.5vh;
+    color: rgba(255, 255, 255, 0.4);
+    z-index: 100;
+    display: flex;
+    gap: 1vh;
+}
+
+#player-index {
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Edit Mode UI */
+#edit-toggle-btn {
+    position: absolute;
+    top: 2vh;
+    right: 2vw;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.2);
+    border: 0.2vh solid rgba(255, 255, 255, 0.5);
+    color: #fff;
+    padding: 1vh 2vw;
+    border-radius: 1vh;
+    font-size: 2vh;
+}
+
+#edit-toggle-btn.active {
+    background: #ff3b3b;
+    border-color: #ffaaaa;
+}
+
+#edit-controls {
+    position: absolute;
+    top: 10vh;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 2vh 4vw;
+    border-radius: 2vh;
+    display: flex;
+    align-items: center;
+    gap: 2vw;
+    border: 0.2vh solid #555;
+}
+
+#edit-controls label {
+    font-size: 2vh;
+    color: #fff;
+}
+
+#size-slider {
+    width: 30vw;
+}
+
+#reset-layout-btn {
+    background: #555;
+    color: #fff;
+    border: none;
+    padding: 1vh 2vw;
+    border-radius: 1vh;
+    font-size: 1.5vh;
+}
+
+.overlay-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* Draggable Wrapper */
+.draggable {
+    /* Need absolute position for accurate dragging via left/top overrides in JS */
+    position: absolute;
+    transform-origin: center center;
+}
+
+body.edit-mode .draggable {
+    border: 0.2vh dashed rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+body.edit-mode .draggable.selected {
+    border: 0.4vh solid #2BEE9A;
+    background: rgba(43, 238, 154, 0.2);
+    z-index: 500;
+}
+
+
+/* Base Button Style */
+.btn {
+    background: var(--btn-fill);
+    border: 0.5vh solid var(--btn-stroke);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--text-color);
+    font-weight: bold;
+    outline: none;
+}
+
+/* In regular mode they don't have position absolute anymore unless specified, but draggable groups wrapper DO have position absolute. So .btn inside .draggable don't need to change unless it's dpad/action */
+
+.btn:active,
+.btn.pressed {
+    background: var(--btn-fill-active);
+    border-color: var(--btn-stroke-active);
+    color: #fff;
+}
+
+/* Shoulder Buttons */
+.shoulder-group {
+    top: 3vh;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5vh;
+}
+.shoulder-group.left { left: 3vw; }
+.shoulder-group.right { right: 3vw; }
+
+.shoulder {
+    width: 25vh; max-width: 15vw; height: 9vh;
+    border-radius: 2vh; font-size: 3vh; letter-spacing: 0.2vh;
+}
+
+/* Center Pills */
+.center-bottom {
+    bottom: 3vh; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 3vw; align-items: center; justify-content: center;
+}
+.pill {
+    width: 16vh; max-width: 12vw; height: 8vh;
+    border-radius: 4vh; font-size: 2.5vh; letter-spacing: 0.1vh;
+}
+
+/* Thumb Clicks */
+.thumb-clicks {
+    bottom: 14vh; left: 50%; transform: translateX(-50%);
+    display: flex; justify-content: center; gap: 20vw;
+}
+.pill.small {
+    width: 12vh; max-width: 8vw; height: 6vh;
+    border-radius: 3vh; font-size: 2vh;
+}
+
+/* D-Pad Container */
+.dpad-container {
+    bottom: 10vh; left: 4vw;
+    width: 45vh; height: 45vh;
+}
+.dpad {
+    position: absolute; 
+    width: 38%; height: 38%;
+    border: none; background: transparent; padding: 0; z-index: 10;
+}
+.dpad svg { width: 100%; height: 100%; filter: drop-shadow(0 0 0.5vh rgba(255, 255, 255, 0.2)); }
+.dpad.up { top: 0; left: 31%; }
+.dpad.down { top: 62%; left: 31%; }
+.dpad.left { top: 31%; left: 0; }
+.dpad.right { top: 31%; right: 0; }
+
+.dpad-center {
+    position: absolute;
+    top: 31%; left: 31%;
+    width: 38%; height: 38%;
+    background: var(--btn-fill);
+    border-radius: 2vh;
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* Action Buttons */
+.action-container {
+    bottom: 10vh;
+    right: 4vw;
+    width: 45vh;
+    height: 45vh;
+}
+
+.action {
+    position: absolute; 
+    width: 38%;
+    height: 38%;
+    border-radius: 50%;
+}
+
+.action svg {
+    width: 60%;
+    height: 60%;
+    color: var(--text-color);
+}
+
+.action:active svg, .action.pressed svg {
+    color: #fff;
+}
+
+.action.triangle { top: 0; left: 31%; }
+.action.circle { top: 31%; right: 0; }
+.action.cross { top: 62%; left: 31%; }
+.action.square { top: 31%; left: 0; }
+
+/* Analog Sticks */
+.stick-area {
+    bottom: 15vh;
+    width: 32vh; height: 32vh;
+    background: rgba(255, 255, 255, 0.05);
+    border: 0.5vh solid var(--btn-stroke);
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+}
+.stick-cap {
+    width: 45%; height: 45%;
+    background: var(--btn-stroke);
+    border: 0.5vh solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%; pointer-events: none;
+    box-shadow: 0 0 2vh rgba(0, 0, 0, 0.5);
+}
+.left-stick { left: calc(6vw + 42vh); }
+.right-stick { right: calc(6vw + 42vh); }
