@@ -3,11 +3,12 @@
 A fully functional, web-based PlayStation 2 virtual controller that runs on your smartphone and instantly connects to your Windows PC over local Wi-Fi. It emulates a physical Xbox 360 controller via `vgamepad`, giving you native plug-and-play support in almost all modern PC games and emulators!
 
 ## 🎮 Features
+- **Flutter Android Client:** A native Android app with haptic feedback (vibration) for a true console experience, and auto-discovery of the host PC.
 - **Zero-Latency Local Web Socket:** Instantly streams your touch inputs directly to your PC without internet dependencies.
 - **Fully Customizable Layout:** Hit "Edit Layout" to drag, drop, and resize individual buttons or groups to match your exact hand size and preferences.
-- **Persistent Memory:** Your custom layout saves locally to your mobile browser and instantly restores the next time you open the controller.
+- **Persistent Memory:** Your custom layout saves locally to your mobile device and instantly restores the next time you open the controller.
 - **Multi-Touch Support:** Engineered for multi-touch accuracy to handle dual-analog movement while pressing multiple action buttons simultaneously.
-- **PWA Support:** Add it to your smartphone's Home Screen to launch it in full-screen as a standalone native app!
+- **PWA Support (Web Client):** Add it to your smartphone's Home Screen to launch it in full-screen as a standalone native app!
 
 ## 📹 Demo
 *(Watch the controller in action seamlessly driving gameplay in **God of War 2**, mirrored directly from phone to PC!)*
@@ -55,7 +56,8 @@ If you ever want to revert everything back to standard, jump into Edit Layout an
 
 ## 💻 Tech Stack
 - **Backend:** Python, FastAPI, Uvicorn, VGamepad
-- **Frontend:** Vanilla HTML5, CSS3, JavaScript (WebSocket, Touch Events)
+- **Frontend (Web):** Vanilla HTML5, CSS3, JavaScript (WebSocket, Touch Events)
+- **Frontend (Android):** Flutter, Dart (with vibration support)
 
 ## 👋 Credits
 Created and developed by **Halwest**.

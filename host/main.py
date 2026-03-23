@@ -1,6 +1,9 @@
 import asyncio
 import json
 import logging
+import socket
+import threading
+import time
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
@@ -10,6 +13,35 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+def get_broadcast_addresses():
+    bcast = ["<broadcast>", "255.255.255.255"]
+    try:
+        host = socket.gethostname()
+        ips = socket.gethostbyname_ex(host)[2]
+        for ip in ips:
+            parts = ip.split('.')
+            parts[-1] = '255'
+            bcast.append('.'.join(parts))
+    except:
+        pass
+    return set(bcast)
+
+def udp_broadcast():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    while True:
+        targets = get_broadcast_addresses()
+        msg = b"PS2_CONTROLLER_SERVER"
+        for t in targets:
+            try:
+                sock.sendto(msg, (t, 8001))
+            except Exception:
+                pass
+        time.sleep(2)
+
+threading.Thread(target=udp_broadcast, daemon=True).start()
 
 app.mount("/client", StaticFiles(directory="../client", html=True), name="client")
 
@@ -47,9 +79,19 @@ class ConnectionManager:
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         try:
+            loop = asyncio.get_running_loop()
             # Create a brand new virtual gamepad for this specific connection
             pad = vg.VX360Gamepad()
             logger.info("Created new virtual gamepad for client.")
+            
+            def rumble_callback(client, target, large_motor, small_motor, led_number, user_data):
+                try:
+                    msg = {"type": "rumble", "large": large_motor, "small": small_motor}
+                    asyncio.run_coroutine_threadsafe(websocket.send_text(json.dumps(msg)), loop)
+                except Exception as e:
+                    logger.error(f"Error in rumble callback: {e}")
+
+            pad.register_notification(rumble_callback)
 
             self.active_pads[websocket] = pad
             self.player_counter += 1
@@ -67,6 +109,7 @@ class ConnectionManager:
             pad = self.active_pads[websocket]
             if pad:
                 try:
+                    pad.unregister_notification()
                     pad.reset()
                     pad.update()
                 except Exception:
@@ -93,6 +136,9 @@ async def websocket_endpoint(websocket: WebSocket):
             except json.JSONDecodeError:
                 logger.warning(f"Failed to parse JSON: {data}")
     except WebSocketDisconnect:
+        manager.disconnect(websocket)
+    except Exception as e:
+        logger.error(f"WebSocket error: {e}")
         manager.disconnect(websocket)
 
 def handle_input(msg: dict, gamepad: vg.VX360Gamepad):
