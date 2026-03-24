@@ -72,12 +72,14 @@ document.addEventListener('DOMContentLoaded', () => {
         isEditMode = !isEditMode;
         if (isEditMode) {
             document.body.classList.add('edit-mode');
-            editToggleBtn.textContent = 'Save Layout';
+            editToggleBtn.textContent = '💾';
+            editToggleBtn.title = 'Save Layout';
             editToggleBtn.classList.add('active');
             editControls.style.display = 'flex';
         } else {
             document.body.classList.remove('edit-mode');
-            editToggleBtn.textContent = 'Edit Layout';
+            editToggleBtn.textContent = '✏️';
+            editToggleBtn.title = 'Edit Layout';
             editToggleBtn.classList.remove('active');
             editControls.style.display = 'none';
             if (selectedElement) selectedElement.classList.remove('selected');
@@ -184,14 +186,16 @@ document.addEventListener('DOMContentLoaded', () => {
         ws.onopen = () => {
             isConnected = true;
             statusTextEl.textContent = "Connected";
-            statusTextEl.style.color = "rgba(255,255,255,0.8)";
+            statusTextEl.classList.remove('disconnected');
+            statusTextEl.classList.add('connected');
         };
 
         ws.onclose = () => {
             isConnected = false;
-            statusTextEl.textContent = "Disconnected...";
-            statusTextEl.style.color = "red";
-            playerIndexEl.textContent = "[P?]";
+            statusTextEl.textContent = "Disconnected";
+            statusTextEl.classList.remove('connected');
+            statusTextEl.classList.add('disconnected');
+            playerIndexEl.textContent = "";
             setTimeout(connect, 2000);
         };
 
@@ -199,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const msg = JSON.parse(e.data);
                 if (msg.type === "assign_index") {
-                    playerIndexEl.textContent = `[P${msg.index}]`;
+                    playerIndexEl.textContent = `P${msg.index}`;
                 }
             } catch (err) { }
         };

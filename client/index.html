@@ -10,7 +10,7 @@
     <meta name="theme-color" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="style.css?v=5">
+    <link rel="stylesheet" href="style.css?v=7">
 </head>
 
 <body>
@@ -19,71 +19,89 @@
     </div>
 
     <div id="status-container">
-        <span id="player-index">[P?]</span>
-        <span id="status">Connecting...</span>
+        <span id="status" class="disconnected">Connecting...</span>
+        <span id="player-index"></span>
     </div>
 
     <!-- Edit Mode Controls -->
-    <button id="edit-toggle-btn">Edit Layout</button>
+    <button id="edit-toggle-btn" title="Edit Layout">✏️</button>
 
     <div id="edit-controls" style="display: none;">
         <label for="size-slider">Scale Selected:</label>
         <input type="range" id="size-slider" min="0.5" max="2.5" step="0.1" value="1">
-        <button id="reset-layout-btn">Reset Defaults</button>
+        <button id="reset-layout-btn">Reset Layout</button>
     </div>
 
-            <div class="overlay-container">
-        <div class="shoulder-group left draggable" id="shoulder-left" data-id="shoulder-left">
-            <button class="btn shoulder trigger" data-btn="L2">L2</button>
+    <div class="overlay-container">
+
+        <!-- Shoulder Buttons — each individually draggable -->
+        <div class="shoulder-wrap draggable" id="L1" data-id="L1">
             <button class="btn shoulder bumper" data-btn="L1">L1</button>
         </div>
-        
-        <div class="shoulder-group right draggable" id="shoulder-right" data-id="shoulder-right">
+        <div class="shoulder-wrap draggable" id="L2" data-id="L2">
+            <button class="btn shoulder trigger" data-btn="L2">L2</button>
+        </div>
+        <div class="shoulder-wrap draggable" id="R2" data-id="R2">
             <button class="btn shoulder trigger" data-btn="R2">R2</button>
+        </div>
+        <div class="shoulder-wrap draggable" id="R1" data-id="R1">
             <button class="btn shoulder bumper" data-btn="R1">R1</button>
         </div>
 
-        <div class="center-bottom draggable" id="center-bottom" data-id="center-bottom">
-            <button class="btn pill" data-btn="SELECT">Select</button>
-            <button class="btn pill" id="btn-analog">Analog</button>
-            <button class="btn pill" data-btn="START">Start</button>
+        <!-- D-Pad (3x3 grid — arrows use SVG to avoid emoji rendering on mobile) -->
+        <div class="dpad-container draggable" id="dpad-container" data-id="dpad-container">
+            <div class="dpad-corner tl"></div>
+            <button class="btn dpad up" data-btn="UP">
+                <svg viewBox="0 0 100 100"><polygon points="50,15 85,80 15,80" fill="currentColor"/></svg>
+            </button>
+            <div class="dpad-corner tr"></div>
+
+            <button class="btn dpad left" data-btn="LEFT">
+                <svg viewBox="0 0 100 100"><polygon points="15,50 80,15 80,85" fill="currentColor"/></svg>
+            </button>
+            <div class="dpad-center"></div>
+            <button class="btn dpad right" data-btn="RIGHT">
+                <svg viewBox="0 0 100 100"><polygon points="85,50 20,15 20,85" fill="currentColor"/></svg>
+            </button>
+
+            <div class="dpad-corner bl"></div>
+            <button class="btn dpad down" data-btn="DOWN">
+                <svg viewBox="0 0 100 100"><polygon points="50,85 85,20 15,20" fill="currentColor"/></svg>
+            </button>
+            <div class="dpad-corner br"></div>
         </div>
 
+        <!-- Left Analog Stick -->
+        <div class="stick-area left-stick draggable" id="stick-left-base" data-id="stick-left-base">
+            <div class="stick-cap" id="stick-left"></div>
+        </div>
+
+        <!-- Right Analog Stick -->
+        <div class="stick-area right-stick draggable" id="stick-right-base" data-id="stick-right-base">
+            <div class="stick-cap" id="stick-right"></div>
+        </div>
+
+        <!-- Action Buttons (tighter diamond) -->
+        <div class="action-container draggable" id="action-container" data-id="action-container">
+            <button class="btn action triangle" data-btn="TRIANGLE">△</button>
+            <button class="btn action circle"   data-btn="CIRCLE">○</button>
+            <button class="btn action cross"     data-btn="CROSS">✕</button>
+            <button class="btn action square"    data-btn="SQUARE">□</button>
+        </div>
+
+        <!-- Center: Select / Analog / Start -->
+        <div class="center-bottom draggable" id="center-bottom" data-id="center-bottom">
+            <button class="btn pill" data-btn="SELECT">Sel</button>
+            <button class="btn pill" id="btn-analog">Analog</button>
+            <button class="btn pill" data-btn="START">St</button>
+        </div>
+
+        <!-- Thumb Clicks -->
         <div class="thumb-clicks draggable" id="thumb-clicks" data-id="thumb-clicks">
             <button class="btn pill small" data-btn="L3">L3</button>
             <button class="btn pill small" data-btn="R3">R3</button>
         </div>
 
-        <div class="dpad-container draggable" id="dpad-container" data-id="dpad-container">
-            <button class="btn dpad up" data-btn="UP"><svg viewBox="0 0 100 100"><polygon points="50,10 90,90 10,90" fill="currentColor"/></svg></button>
-            <button class="btn dpad down" data-btn="DOWN"><svg viewBox="0 0 100 100"><polygon points="50,90 10,10 90,10" fill="currentColor"/></svg></button>
-            <button class="btn dpad left" data-btn="LEFT"><svg viewBox="0 0 100 100"><polygon points="10,50 90,10 90,90" fill="currentColor"/></svg></button>
-            <button class="btn dpad right" data-btn="RIGHT"><svg viewBox="0 0 100 100"><polygon points="90,50 10,90 10,10" fill="currentColor"/></svg></button>
-            <div class="dpad-center"></div>
-        </div>
-
-        <div class="stick-area left-stick draggable" id="stick-left-base" data-id="stick-left-base">
-            <div class="stick-cap" id="stick-left"></div>
-        </div>
-        
-        <div class="stick-area right-stick draggable" id="stick-right-base" data-id="stick-right-base">
-            <div class="stick-cap" id="stick-right"></div>
-        </div>
-
-        <div class="action-container draggable" id="action-container" data-id="action-container">
-            <button class="btn action triangle" data-btn="TRIANGLE">
-                <svg viewBox="0 0 100 100"><polygon points="50,20 85,80 15,80" fill="none" stroke="currentColor" stroke-width="10" stroke-linejoin="round"/></svg>
-            </button>
-            <button class="btn action circle" data-btn="CIRCLE">
-                <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" stroke-width="12"/></svg>
-            </button>
-            <button class="btn action cross" data-btn="CROSS">
-                <svg viewBox="0 0 100 100"><line x1="28" y1="28" x2="72" y2="72" stroke="currentColor" stroke-width="14" stroke-linecap="round"/><line x1="72" y1="28" x2="28" y2="72" stroke="currentColor" stroke-width="14" stroke-linecap="round"/></svg>
-            </button>
-            <button class="btn action square" data-btn="SQUARE">
-                <svg viewBox="0 0 100 100"><rect x="22" y="22" width="56" height="56" fill="none" stroke="currentColor" stroke-width="12" stroke-linejoin="round"/></svg>
-            </button>
-        </div>
     </div>
 
     <script src="app.js"></script>
